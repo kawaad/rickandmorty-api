@@ -1,0 +1,4 @@
+mysqlclient==2.2.4
+prefect==2.19.4
+requests==2.32.3
+SQLAlchemy==2.0.30
