@@ -11,3 +11,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Configuração inicial do Django
 - Criação do Banco de Dados
+- Criação de models, serializers, views e urls para Episode, Location e Character
