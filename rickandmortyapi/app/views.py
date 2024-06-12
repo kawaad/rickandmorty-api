@@ -21,7 +21,11 @@ class EpisodeListAPIView(APIView):
         serializer = EpisodeSerializer(data=request.data)
         if serializer.is_valid():
             try:
-                serializer.save()
+                episode = serializer.save()
+                character_urls = request.data.get('characters', [])
+                characters = Character.objects.filter(url__in=character_urls)
+                episode.characters.set(characters)
+                episode.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             except IntegrityError:
                 return Response({"error": "An episode with this source_id already exists."},
@@ -53,7 +57,11 @@ class EpisodeAPIView(APIView):
 
         serializer = EpisodeSerializer(episode, data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            episode = serializer.save()
+            character_urls = request.data.get('characters', [])
+            characters = Character.objects.filter(url__in=character_urls)
+            episode.characters.set(characters)
+            episode.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -79,7 +87,11 @@ class LocationListAPIView(APIView):
         serializer = LocationSerializer(data=request.data)
         if serializer.is_valid():
             try:
-                serializer.save()
+                location = serializer.save()
+                residents_urls = request.data.get('residents', [])
+                residents = Character.objects.filter(url__in=residents_urls)
+                location.residents.set(residents)
+                location.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             except IntegrityError:
                 return Response({"error": "A location with this source_id already exists."},
@@ -111,7 +123,11 @@ class LocationAPIView(APIView):
 
         serializer = LocationSerializer(location, data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            location = serializer.save()
+            residents_urls = request.data.get('residents', [])
+            residents = Character.objects.filter(url__in=residents_urls)
+            location.residents.set(residents)
+            location.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

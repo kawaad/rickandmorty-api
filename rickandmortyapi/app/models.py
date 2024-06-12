@@ -10,7 +10,7 @@ class Location(models.Model):
     dimension = models.CharField(max_length=100)
     source_id = models.IntegerField(unique=True)
     residents = models.ManyToManyField('Character', related_name='residents_locations')
-    url = models.URLField(null=True, blank=True)
+    url = models.URLField(unique=True, null=True, blank=True)
     created = models.DateTimeField()
 
     class Meta:
@@ -27,7 +27,7 @@ class Episode(models.Model):
     episode = models.CharField(max_length=100)
     source_id = models.IntegerField(unique=True)
     characters = models.ManyToManyField('Character', related_name='episode_characters')
-    url = models.URLField(null=True, blank=True)
+    url = models.URLField(unique=True, null=True, blank=True)
     created = models.DateTimeField()
 
     class Meta:
@@ -52,7 +52,7 @@ class Character(models.Model):
     episode = models.ForeignKey('Episode', on_delete=models.SET_NULL,
                                 null=True, related_name='characters_in_episode')
     image = models.URLField(null=True, blank=True)
-    url = models.URLField(null=True, blank=True)
+    url = models.URLField(unique=True, null=True, blank=True)
     created = models.DateTimeField()
 
     class Meta:
