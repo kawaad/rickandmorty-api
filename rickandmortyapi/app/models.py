@@ -9,8 +9,7 @@ class Location(models.Model):
     type = models.CharField(max_length=100)
     dimension = models.CharField(max_length=100)
     source_id = models.IntegerField(unique=True)
-    residents = models.ForeignKey('Character', on_delete=models.SET_NULL,
-                                  null=True, related_name='residents_locations')
+    residents = models.ManyToManyField('Character', related_name='residents_locations')
     url = models.URLField(null=True, blank=True)
     created = models.DateTimeField()
 
@@ -27,8 +26,7 @@ class Episode(models.Model):
     air_date = models.CharField(max_length=100)
     episode = models.CharField(max_length=100)
     source_id = models.IntegerField(unique=True)
-    characters = models.ForeignKey('Character', on_delete=models.SET_NULL,
-                                   null=True, related_name='episode_characters')
+    characters = models.ManyToManyField('Character', related_name='episode_characters')
     url = models.URLField(null=True, blank=True)
     created = models.DateTimeField()
 

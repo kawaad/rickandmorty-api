@@ -8,7 +8,7 @@ API for data extracted from the Rick and Morty API (https://rickandmortyapi.com/
 - Git
 - MySQL
 
-## rickandmorty API installation
+## API installation
 
 ### Clone the repository
 - `$ git clone git@github.com:kawaad/rickandmorty-api.git `
@@ -20,14 +20,15 @@ API for data extracted from the Rick and Morty API (https://rickandmortyapi.com/
 - `$ virtualenv venv `
 - `$ source venv/bin/activate`
 
-### Install dependencies
+### API dependencies
 `$ pip install -r requirements.txt `
 
 
-## Run rickandmorty API
+## Run API
 
 ### Config database
-`$ python manage.py migrate `
+- `$ cd rickandmorty `
+- `$ python manage.py migrate `
 
 ### Run server
 `$ python manage.py runserver`
