@@ -49,8 +49,6 @@ class Character(models.Model):
                                null=True, related_name='origin_characters')
     location = models.ForeignKey('Location', on_delete=models.SET_NULL,
                                  null=True, related_name='current_characters')
-    episode = models.ForeignKey('Episode', on_delete=models.SET_NULL,
-                                null=True, related_name='characters_in_episode')
     image = models.URLField(null=True, blank=True)
     url = models.URLField(unique=True, null=True, blank=True)
     created = models.DateTimeField()
@@ -60,3 +58,9 @@ class Character(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_episodes(self):
+        return self.episode_characters.all()
+
+    def set_episodes(self, episodes):
+        self.episode_characters.set(episodes)

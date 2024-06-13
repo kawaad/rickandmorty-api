@@ -18,11 +18,12 @@ class EpisodeListAPIView(APIView):
 
     @staticmethod
     def post(request):
+        request.data['source_id'] = request.data.pop('id', None)
+        character_urls = request.data.pop('characters', [])
         serializer = EpisodeSerializer(data=request.data)
         if serializer.is_valid():
             try:
                 episode = serializer.save()
-                character_urls = request.data.get('characters', [])
                 characters = Character.objects.filter(url__in=character_urls)
                 episode.characters.set(characters)
                 episode.save()
@@ -51,6 +52,8 @@ class EpisodeAPIView(APIView):
         return Response(serializer.data)
 
     def put(self, request, source_id):
+        request.data['source_id'] = request.data.pop('id', None)
+        character_urls = request.data.pop('characters', [])
         episode = self.get_object(source_id)
         if isinstance(episode, Response):
             return episode
@@ -58,7 +61,6 @@ class EpisodeAPIView(APIView):
         serializer = EpisodeSerializer(episode, data=request.data)
         if serializer.is_valid():
             episode = serializer.save()
-            character_urls = request.data.get('characters', [])
             characters = Character.objects.filter(url__in=character_urls)
             episode.characters.set(characters)
             episode.save()
@@ -84,14 +86,14 @@ class LocationListAPIView(APIView):
 
     @staticmethod
     def post(request):
+        request.data['source_id'] = request.data.pop('id', None)
+        residents_urls = request.data.pop('residents', [])
         serializer = LocationSerializer(data=request.data)
         if serializer.is_valid():
             try:
                 location = serializer.save()
-                residents_urls = request.data.get('residents', [])
                 residents = Character.objects.filter(url__in=residents_urls)
                 location.residents.set(residents)
-                location.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             except IntegrityError:
                 return Response({"error": "A location with this source_id already exists."},
@@ -117,6 +119,8 @@ class LocationAPIView(APIView):
         return Response(serializer.data)
 
     def put(self, request, source_id):
+        request.data['source_id'] = request.data.pop('id', None)
+        residents_urls = request.data.pop('residents', [])
         location = self.get_object(source_id)
         if isinstance(location, Response):
             return location
@@ -124,7 +128,6 @@ class LocationAPIView(APIView):
         serializer = LocationSerializer(location, data=request.data)
         if serializer.is_valid():
             location = serializer.save()
-            residents_urls = request.data.get('residents', [])
             residents = Character.objects.filter(url__in=residents_urls)
             location.residents.set(residents)
             location.save()
@@ -150,10 +153,31 @@ class CharacterListAPIView(APIView):
 
     @staticmethod
     def post(request):
+        request.data['source_id'] = request.data.pop('id', None)
+        origin_data = request.data.pop('origin', None)
+        location_data = request.data.pop('location', None)
+        episode_data = request.data.pop('episode', [])
         serializer = CharacterSerializer(data=request.data)
         if serializer.is_valid():
             try:
-                serializer.save()
+                character = serializer.save()
+
+                if origin_data:
+                    origin_url = origin_data.get('url')
+                    origin = Location.objects.filter(url=origin_url).first()
+                    if origin:
+                        character.origin = origin
+                        character.save()
+
+                if location_data:
+                    location_url = location_data.get('url')
+                    location = Location.objects.filter(url=location_url).first()
+                    if location:
+                        character.location = location
+                        character.save()
+
+                episodes = Episode.objects.filter(url__in=episode_data)
+                character.set_episodes(episodes)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             except IntegrityError:
                 return Response({"error": "A character with this source_id already exists."},
@@ -179,13 +203,32 @@ class CharacterAPIView(APIView):
         return Response(serializer.data)
 
     def put(self, request, source_id):
+        request.data['source_id'] = request.data.pop('id', None)
         character = self.get_object(source_id)
         if isinstance(character, Response):
             return character
-
+        origin_data = request.data.pop('origin', None)
+        location_data = request.data.pop('location', None)
+        episode_data = request.data.pop('episode', [])
         serializer = CharacterSerializer(character, data=request.data)
         if serializer.is_valid():
-            serializer.save()
+
+            if origin_data:
+                origin_url = origin_data.get('url')
+                origin = Location.objects.filter(url=origin_url).first()
+                if origin:
+                    character.origin = origin
+                    character.save()
+
+            if location_data:
+                location_url = location_data.get('url')
+                location = Location.objects.filter(url=location_url).first()
+                if location:
+                    character.location = location
+                    character.save()
+
+            episodes = Episode.objects.filter(url__in=episode_data)
+            character.set_episodes(episodes)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
