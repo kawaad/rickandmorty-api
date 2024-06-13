@@ -35,6 +35,14 @@ API for data extracted from the Rick and Morty API (https://rickandmortyapi.com/
 
 ### Access the API at `http://127.0.0.1:8000/`.
 
+## Run Extraction
+
+- `$ python manage.py extract_data `
+
+### Commands utils
+
+`$ export DJANGO_SETTINGS_MODULE=rickandmortyapi.settings`
+`$ export PYTHONPATH="${PYTHONPATH}:/rickandmorty-api/rickandmortyapi"`
 
 ## Licence
 

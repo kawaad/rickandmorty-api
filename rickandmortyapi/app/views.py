@@ -41,7 +41,8 @@ class EpisodeAPIView(APIView):
         try:
             return Episode.objects.get(source_id=source_id)
         except Episode.DoesNotExist:
-            raise status.HTTP_404_NOT_FOUND
+            return Response({"error": "This episode don't exists."},
+                            status=status.HTTP_404_NOT_FOUND)
 
     def get(self, request, source_id):
         episode = self.get_object(source_id)
@@ -57,7 +58,6 @@ class EpisodeAPIView(APIView):
         episode = self.get_object(source_id)
         if isinstance(episode, Response):
             return episode
-
         serializer = EpisodeSerializer(episode, data=request.data)
         if serializer.is_valid():
             episode = serializer.save()
@@ -108,7 +108,8 @@ class LocationAPIView(APIView):
         try:
             return Location.objects.get(source_id=source_id)
         except Location.DoesNotExist:
-            raise status.HTTP_404_NOT_FOUND
+            return Response({"error": "This location don't exists."},
+                            status=status.HTTP_404_NOT_FOUND)
 
     def get(self, request, source_id):
         location = self.get_object(source_id)
@@ -161,7 +162,6 @@ class CharacterListAPIView(APIView):
         if serializer.is_valid():
             try:
                 character = serializer.save()
-
                 if origin_data:
                     origin_url = origin_data.get('url')
                     origin = Location.objects.filter(url=origin_url).first()
@@ -192,7 +192,8 @@ class CharacterAPIView(APIView):
         try:
             return Character.objects.get(source_id=source_id)
         except Character.DoesNotExist:
-            raise status.HTTP_404_NOT_FOUND
+            return Response({"error": "This character don't exists."},
+                            status=status.HTTP_404_NOT_FOUND)
 
     def get(self, request, source_id):
         character = self.get_object(source_id)
@@ -212,7 +213,6 @@ class CharacterAPIView(APIView):
         episode_data = request.data.pop('episode', [])
         serializer = CharacterSerializer(character, data=request.data)
         if serializer.is_valid():
-
             if origin_data:
                 origin_url = origin_data.get('url')
                 origin = Location.objects.filter(url=origin_url).first()

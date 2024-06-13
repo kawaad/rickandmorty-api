@@ -1,36 +1,30 @@
-from prefect import task, Flow
-#from prefect.schedules import IntervalSchedule
-from datetime import timedelta
-import sys
+from prefect import task, flow
+import django
 
-sys.path.append('rickandmortyapi')
-
-from app.services.data_extractor import DataExtractor
+django.setup()
 
 
-@task(retries=3, retry_delay_seconds=10)
-def extract_characters():
-    DataExtractor.extract_characters()
+@task(name="CharacterExtraction", retries=3, retry_delay_seconds=10)
+def extract_characters_task(data_extractor):
+    data_extractor.extract_characters()
 
 
-@task(retries=3, retry_delay_seconds=10)
-def extract_episodes():
-    DataExtractor.extract_episodes()
+@task(name="EpisodeExtraction", retries=3, retry_delay_seconds=10)
+def extract_episodes_task(data_extractor):
+    data_extractor.extract_episodes()
 
 
-@task(retries=3, retry_delay_seconds=10)
-def extract_locations():
-    DataExtractor.extract_locations()
+@task(name="LocationExtraction", retries=3, retry_delay_seconds=10)
+def extract_locations_task(data_extractor):
+    data_extractor.extract_locations()
 
 
-# schedule = IntervalSchedule(interval=timedelta(hours=1))
-
-
-with Flow("RickAndMortyDataExtraction") as flow:
-    #extract_characters()
-    #extract_episodes()
-    extract_locations()
+@flow(name="RickAndMortyDataExtraction")
+def extract_flow():
+    extract_characters_task()
+    extract_episodes_task()
+    extract_locations_task()
 
 
 if __name__ == "__main__":
-    flow.run()
+    extract_flow()
